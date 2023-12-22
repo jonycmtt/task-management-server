@@ -36,6 +36,14 @@ async function run() {
     res.send(result);
    })
 
+   app.get('/task/:id', async(req,res) => {
+    const id = req.params.id;
+    const filter = {_id : new ObjectId(id)};
+    const result = await taskCollection.findOne(filter);
+    res.send(result)
+   })
+
+
    app.post('/task', async(req,res) => {
     const createTask = req.body;
     const result = await taskCollection.insertOne(createTask);
@@ -59,6 +67,30 @@ async function run() {
     res.send(result)
    })
     
+   app.delete("/task/:id", async (req, res) => {
+    const id = req.params.id;
+    const query = { _id: new ObjectId(id) };
+    const result = await taskCollection.deleteOne(query);
+    res.send(result);
+  });
+
+  app.patch("/task/update/:id", async (req, res) => {
+    const id = req.params.id;
+    const filter = { _id: new ObjectId(id)};
+    const updateTask = req.body;
+    console.log(updateTask);
+    
+    const updatedDoc = {
+      $set: {
+        title: updateTask.title,
+        dateline: updateTask.dateline,
+        description: updateTask.description,
+      },
+    };
+    console.log(updatedDoc);
+    const result = await taskCollection.updateOne(filter, updatedDoc);
+    res.send(result);
+  });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
